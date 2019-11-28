@@ -18,8 +18,7 @@ void RadixTree::insert(std::string_view str) {
     if (!root_->label.empty()) {
         string_view prefix = get_common_prefix(str, root_->label);
 
-        str.remove_prefix(prefix.size());
-
+//        str.remove_prefix(prefix.size());
 //        if (prefix != root_->label) {
 //            if (prefix.empty()) {
 //                update_root("", move(root_->label));
@@ -136,6 +135,32 @@ std::vector<RadixTree::TreeValue> RadixTree::getAllValues() const {
         }
     }
     return res;
+}
+
+std::optional<std::string_view> RadixTree::find(std::string_view str) const {
+    if (!root_) return nullopt;
+
+    Node* rootNode = root_.get();
+    while (!rootNode->isLeaf() && !str.empty()) {
+        Node* nextNode = nullptr;
+        for (const auto& node : rootNode->childs) {
+            string_view prefix = get_common_prefix(str, node->label);
+            if (!prefix.empty() && prefix == node->label) {
+                str.remove_prefix(prefix.size());
+                if (str.empty() ) {
+                    return prefix;
+                }
+                nextNode = node.get();
+                break;
+            }
+        }
+        if (nextNode) {
+            rootNode = nextNode;
+        } else {
+            return nullopt;
+        }
+    }
+    return nullopt;
 }
 
 std::string getTreeStructure(const RadixTree& tr) {

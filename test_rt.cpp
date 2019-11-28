@@ -157,4 +157,17 @@ BOOST_AUTO_TEST_SUITE(radix_tree_test_suite)
         }
     }
 
+    BOOST_AUTO_TEST_CASE(test_find) {
+        {
+            RadixTree tr;
+            tr.insert("aleksey");
+            tr.insert("sasha");
+            tr.insert("aleks");
+            tr.insert("alek");
+            tr.insert("alesha");
+            tr.insert("maksim");
+            BOOST_TEST(*tr.find("alek") == "k");
+        }
+    }
+
 BOOST_AUTO_TEST_SUITE_END()

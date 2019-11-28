@@ -5,6 +5,7 @@
 #include <vector>
 #include <list>
 #include <memory>
+#include <optional>
 
 class RadixTree {
     struct Node;
@@ -29,7 +30,7 @@ class RadixTree {
     static Node* add_node(Node* node, NodePtr&& new_node);
 public:
     void insert(std::string_view str);
-    //bool find(const std::string& str) const;
+    [[nodiscard]] std::optional<std::string_view> find(std::string_view str) const;
     [[nodiscard]] std::vector<TreeValue> getAllValues() const;
 private:
     NodePtr root_;
