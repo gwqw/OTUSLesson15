@@ -3,6 +3,7 @@
 #include <string>
 #include <string_view>
 #include <vector>
+#include <list>
 #include <memory>
 
 class RadixTree {
@@ -11,13 +12,30 @@ class RadixTree {
     struct Node {
         std::string label;
         bool is_end = true;
-        std::vector<NodePtr> childs;
-        bool isLeaf() const {return childs.empty();}
+        std::list<NodePtr> childs;
+        [[nodiscard]] bool isLeaf() const {return childs.empty();}
     };
+
+    struct TreeValue {
+        std::string_view label;
+        std::size_t lvl = 0;
+        bool is_end = false;
+    };
+    template <typename...Args>
+    static Node* add_node(Node* node, Args&&... args) {
+        node->childs.push_back(std::make_unique<Node>(std::forward<Args>(args)...));
+        return node->childs.back().get();
+    }
+    static Node* add_node(Node* node, NodePtr&& new_node);
 public:
     void insert(std::string_view str);
-    //void erase(const std::string& str);
     //bool find(const std::string& str) const;
+    [[nodiscard]] std::vector<TreeValue> getAllValues() const;
 private:
     NodePtr root_;
+    void update_root(std::string root_label, std::string child_label);
 };
+
+std::string getTreeStructure(const RadixTree& tr);
+
+
