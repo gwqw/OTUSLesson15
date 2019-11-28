@@ -137,9 +137,10 @@ std::vector<RadixTree::TreeValue> RadixTree::getAllValues() const {
     return res;
 }
 
-std::optional<std::string_view> RadixTree::find(std::string_view str) const {
-    if (!root_) return nullopt;
+std::size_t RadixTree::find(std::string_view str) const {
+    if (!root_) return 0;
 
+    size_t cur_pos = 0;
     Node* rootNode = root_.get();
     while (!rootNode->isLeaf() && !str.empty()) {
         Node* nextNode = nullptr;
@@ -148,19 +149,20 @@ std::optional<std::string_view> RadixTree::find(std::string_view str) const {
             if (!prefix.empty() && prefix == node->label) {
                 str.remove_prefix(prefix.size());
                 if (str.empty() ) {
-                    return prefix;
+                    return cur_pos;
                 }
                 nextNode = node.get();
+                cur_pos += prefix.size();
                 break;
             }
         }
         if (nextNode) {
             rootNode = nextNode;
         } else {
-            return nullopt;
+            return 0;
         }
     }
-    return nullopt;
+    return 0;
 }
 
 std::string getTreeStructure(const RadixTree& tr) {
