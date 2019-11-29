@@ -50,10 +50,11 @@ void RadixTree::insert(std::string_view str) {
      */
     Node* rootNode = root_.get();
     while (!rootNode->isLeaf() && !str.empty()) {
-        auto [it, prefix] = get_closest_node(rootNode, str);
+        auto it = get_closest_node(rootNode, str);
         if (it == rootNode->childs.end()) break;
 
-        auto& node = *it;
+        auto& node = it->second;
+        string_view prefix = get_common_prefix(str, node->label);
         if (prefix == node->label) {
             str.remove_prefix(prefix.size());
             rootNode = node.get();
@@ -95,9 +96,10 @@ std::size_t RadixTree::find(std::string_view str) const {
     size_t cur_pos = 0;
     Node* rootNode = root_.get();
     while (!rootNode->isLeaf() && !str.empty()) {
-        auto [it, prefix] = get_closest_node(rootNode, str);
+        auto it = get_closest_node(rootNode, str);
         if (it == rootNode->childs.end()) break;
-        const auto& node = *it;
+        const auto& node = it->second;
+        string_view prefix = get_common_prefix(str, node->label);
 
         if (!prefix.empty() && prefix == node->label) {
             str.remove_prefix(prefix.size());
@@ -118,19 +120,18 @@ void RadixTree::update_root(std::string label, std::string child_label) {
     add_node(root_.get(), move(old_root));
 }
 
-std::pair<RadixTree::NodeIter, std::string_view> RadixTree::get_closest_node(RadixTree::Node *root, std::string_view str) {
-    for (auto it =  root->childs.begin(); it != root->childs.end(); ++it) {
-        string_view prefix = get_common_prefix(str, (*it)->label);
-        if (!prefix.empty()) {
-            return {it, prefix};
-        }
-    }
-    return {root->childs.end(), ""};
+RadixTree::NodeIter RadixTree::get_closest_node(
+        RadixTree::Node *root, std::string_view str) {
+    return root->childs.find(str[0]);
 }
 
 RadixTree::Node *RadixTree::add_node(RadixTree::Node *node, RadixTree::NodePtr &&new_node) {
-    node->childs.push_back(move(new_node));
-    return node->childs.back().get();
+    auto [it, res] = node->childs.emplace(new_node->label[0], move(new_node));
+    if (res) {
+        return it->second.get();
+    } else {
+        return nullptr;
+    }
 }
 
 std::vector<RadixTree::TreeValue> RadixTree::getAllValues() const {
@@ -142,8 +143,8 @@ std::vector<RadixTree::TreeValue> RadixTree::getAllValues() const {
         st.pop();
         res.emplace_back(TreeValue{node->label, lvl, node->is_end, node->isLeaf()});
         ++lvl;
-        for (auto it = node->childs.rbegin(); it != node->childs.rend(); ++it) {
-            st.emplace(it->get(), lvl);
+        for (auto it = node->childs.begin(); it != node->childs.end(); ++it) {
+            st.emplace(it->second.get(), lvl);
         }
     }
     return res;

@@ -3,20 +3,21 @@
 #include <string>
 #include <string_view>
 #include <vector>
-#include <list>
+#include <unordered_map>
 #include <memory>
 #include <utility>
 
 class RadixTree {
     struct Node;
-    using  NodePtr = std::unique_ptr<Node>;
+    using NodePtr = std::unique_ptr<Node>;
+    using LeafContainer = std::unordered_map<char, NodePtr>;
+    using NodeIter = std::unordered_map<char, NodePtr>::iterator;
     struct Node {
         std::string label;
         bool is_end = true;
-        std::list<NodePtr> childs;
+        std::unordered_map<char, NodePtr> childs;
         [[nodiscard]] bool isLeaf() const {return childs.empty();}
     };
-    using NodeIter = std::list<NodePtr>::iterator;
 public:
     struct TreeValue {
         std::string_view label;
@@ -31,11 +32,15 @@ public:
 private:
     NodePtr root_;
     void update_root(std::string root_label, std::string child_label);
-    static std::pair<NodeIter, std::string_view> get_closest_node(Node* root, std::string_view str);
+    static NodeIter get_closest_node(Node* root, std::string_view str);
     template <typename...Args>
     static Node* add_node(Node* node, Args&&... args) {
-        node->childs.push_back(std::make_unique<Node>(std::forward<Args>(args)...));
-        return node->childs.back().get();
+        auto [it, res] = node->childs.emplace(node->label[0], std::make_unique<Node>(std::forward<Args>(args)...));
+        if (res) {
+            return it->second.get();
+        } else {
+            return nullptr;
+        }
     }
     static Node* add_node(Node* node, NodePtr&& new_node);
 };
