@@ -23,7 +23,7 @@ int main(int argc, char* argv[]) {
         cout << n << " " << sv.substr(0, pos+1) << '\n';
     }
 
-    cout << getTreeStructure(tr);
+    cout << getTreeStructure(tr, pretty_formater);
 
     return 0;
 }
