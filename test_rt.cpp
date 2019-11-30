@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_SUITE(radix_tree_test_suite)
             tr.insert("alek");
             tr.insert("alesha");
             tr.insert("maksim");
-            BOOST_TEST(getTreeStructure(tr, simple_formater) == "\nsasha$\nale\nk$\ns$\ney$\nsha$\nmaksim$\n");
+            BOOST_TEST(getTreeStructure(tr, simple_formater) == "\nale\nk$\ns$\ney$\nsha$\nsasha$\nmaksim$\n");
         }
     }
 

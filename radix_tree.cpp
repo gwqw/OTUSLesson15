@@ -2,6 +2,7 @@
 
 #include <utility>
 #include <stack>
+#include <cassert>
 
 #include "str_view_utils.h"
 
@@ -26,7 +27,7 @@ void RadixTree::insert(std::string_view str) {
             // go further
         } else if (prefix.empty()) {
             update_root("", move(root_->label));
-            add_node(root_.get(), Node{string(str), true});
+            add_node(root_.get(), str[0], Node{string(str), true});
             return;
         } else if (prefix == str) { // prefix != root->label
             update_root(string(prefix), get_suffix(root_->label, prefix));
@@ -35,7 +36,7 @@ void RadixTree::insert(std::string_view str) {
         } else {
             update_root(string(prefix), get_suffix(root_->label, prefix));
             str.remove_prefix(prefix.size());
-            add_node(root_.get(), Node{string(str), true});
+            add_node(root_.get(), str[0], Node{string(str), true});
             return;
         }
     }
@@ -62,21 +63,21 @@ void RadixTree::insert(std::string_view str) {
             NodePtr old_node = move(node);
             rootNode->childs.erase(it);
             old_node->label = get_suffix(old_node->label, prefix);
-            rootNode = add_node(rootNode, Node{string(prefix), true});
+            rootNode = add_node(rootNode, prefix[0], Node{string(prefix), true});
             add_node(rootNode, move(old_node));
             return;
         } else if (!prefix.empty()) {
             NodePtr old_node = move(node);
             rootNode->childs.erase(it);
             old_node->label = get_suffix(old_node->label, prefix);
-            rootNode = add_node(rootNode, Node{string(prefix), false});
+            rootNode = add_node(rootNode, prefix[0], Node{string(prefix), false});
             add_node(rootNode, move(old_node));
             str.remove_prefix(prefix.size());
-            add_node(rootNode, Node{string(str), true});
+            add_node(rootNode, str[0], Node{string(str), true});
             return;
         } else { // prefix is empty
             if (!str.empty()) {
-                add_node(rootNode, Node{string(str), true});
+                add_node(rootNode, str[0], Node{string(str), true});
             } else {
                 rootNode->is_end = true;
             }
@@ -84,7 +85,7 @@ void RadixTree::insert(std::string_view str) {
         }
     }
     if (!str.empty()) {
-        add_node(rootNode, Node{string(str), true});
+        add_node(rootNode, str[0], Node{string(str), true});
     } else {
         rootNode->is_end = true;
     }
@@ -122,10 +123,12 @@ void RadixTree::update_root(std::string label, std::string child_label) {
 
 RadixTree::NodeIter RadixTree::get_closest_node(
         RadixTree::Node *root, std::string_view str) {
+    assert(str.size() > 0);
     return root->childs.find(str[0]);
 }
 
 RadixTree::Node *RadixTree::add_node(RadixTree::Node *node, RadixTree::NodePtr &&new_node) {
+    assert(new_node->label.size() > 0);
     auto [it, res] = node->childs.emplace(new_node->label[0], move(new_node));
     if (res) {
         return it->second.get();

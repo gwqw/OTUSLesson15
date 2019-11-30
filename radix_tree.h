@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <memory>
 #include <utility>
+#include <cassert>
 
 class RadixTree {
     struct Node;
@@ -34,8 +35,8 @@ private:
     void update_root(std::string root_label, std::string child_label);
     static NodeIter get_closest_node(Node* root, std::string_view str);
     template <typename...Args>
-    static Node* add_node(Node* node, Args&&... args) {
-        auto [it, res] = node->childs.emplace(node->label[0], std::make_unique<Node>(std::forward<Args>(args)...));
+    static Node* add_node(Node* node, char key, Args&&... args) {
+        auto [it, res] = node->childs.emplace(key, std::make_unique<Node>(std::forward<Args>(args)...));
         if (res) {
             return it->second.get();
         } else {
