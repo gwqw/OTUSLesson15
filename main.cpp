@@ -5,6 +5,7 @@
 #include <string_view>
 
 #include "radix_tree.h"
+#include "print_rt.h"
 
 using namespace std;
 

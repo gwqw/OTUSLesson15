@@ -17,6 +17,7 @@ endif()
 # source
 set(SOURCE radix_tree.cpp radix_tree.h
         str_view_utils.cpp str_view_utils.h
+        print_rt.cpp print_rt.h
     )
 set(EXE_SOURCE main.cpp ${SOURCE})
 set(TEST_SOURCE test_rt.cpp ${SOURCE})

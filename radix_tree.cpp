@@ -41,14 +41,6 @@ void RadixTree::insert(std::string_view str) {
         }
     }
 
-    /* Algo:
-     * go forward while we have prefix in node
-     * if we have full prefix: cut it from str
-     * if we have partial prefix:
-     *      add new node with suffix (from str)
-     *      add new node with sufix (from node if needed)
-     * inv: rootNode is OK (already done)
-     */
     Node* rootNode = root_.get();
     while (!rootNode->isLeaf() && !str.empty()) {
         auto it = get_closest_node(rootNode, str);
@@ -123,12 +115,12 @@ void RadixTree::update_root(std::string label, std::string child_label) {
 
 RadixTree::NodeIter RadixTree::get_closest_node(
         RadixTree::Node *root, std::string_view str) {
-    assert(str.size() > 0);
+    assert(!str.empty());
     return root->childs.find(str[0]);
 }
 
 RadixTree::Node *RadixTree::add_node(RadixTree::Node *node, RadixTree::NodePtr &&new_node) {
-    assert(new_node->label.size() > 0);
+    assert(!new_node->label.empty());
     auto [it, res] = node->childs.emplace(new_node->label[0], move(new_node));
     if (res) {
         return it->second.get();
@@ -139,45 +131,23 @@ RadixTree::Node *RadixTree::add_node(RadixTree::Node *node, RadixTree::NodePtr &
 
 std::vector<RadixTree::TreeValue> RadixTree::getAllValues() const {
     vector<TreeValue> res;
-    stack<pair<Node*, size_t>> st;
-    st.emplace(root_.get(), 0);
+    stack<tuple<Node*, size_t, bool>> st;
+    st.emplace(root_.get(), 0, true);
     while (!st.empty()) {
-        auto [node, lvl] = st.top();
+        auto [node, lvl, is_last] = st.top();
         st.pop();
-        res.emplace_back(TreeValue{node->label, lvl, node->is_end, node->isLeaf()});
+        res.emplace_back(TreeValue{node->label, lvl, node->is_end, node->isLeaf(), is_last});
         ++lvl;
+        is_last = true;
         for (auto it = node->childs.begin(); it != node->childs.end(); ++it) {
-            st.emplace(it->second.get(), lvl);
+            st.emplace(it->second.get(), lvl, is_last);
+            if (it == node->childs.begin()) {
+                is_last = false;
+            }
         }
     }
     return res;
 }
 
-std::string simple_formater(const RadixTree::TreeValue& value) {
-    string res = string(value.label);
-    if (value.is_end) {
-        res += '$';
-    }
-    return res;
-}
 
-std::string pretty_formater(const RadixTree::TreeValue& value) {
-    string res;
-    for (size_t i = 0; i < value.lvl; ++i) {
-        res += "| ";
-    }
-    res += "+ " + string(value.label);
-    if (value.is_end) {
-        res += '$';
-    }
-    return res;
-}
 
-std::string getTreeStructure(const RadixTree& tr, Formater fm) {
-    auto v = tr.getAllValues();
-    string res;
-    for (const auto& c : v) {
-        res += fm(c) + '\n';
-    }
-    return res;
-}

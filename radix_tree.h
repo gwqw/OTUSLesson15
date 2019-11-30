@@ -25,6 +25,7 @@ public:
         std::size_t lvl = 0;
         bool is_end = false;
         bool is_leaf = false;
+        bool is_last = false;
     };
 public:
     void insert(std::string_view str);
@@ -46,10 +47,6 @@ private:
     static Node* add_node(Node* node, NodePtr&& new_node);
 };
 
-using Formater = std::string (*)(const RadixTree::TreeValue& value);
 
-std::string getTreeStructure(const RadixTree& tr, Formater fm);
 
-std::string simple_formater(const RadixTree::TreeValue& value);
-std::string pretty_formater(const RadixTree::TreeValue& value);
 
