@@ -51,3 +51,13 @@ std::string getTreeStructure(const RadixTree& tr, Formater fm) {
     }
     return res;
 }
+
+std::set<std::string> getTreeStructureForTest(const RadixTree& tr) {
+    auto v = tr.getAllValues();
+    set<string> res;
+    vector<bool> is_continued;
+    for (const auto& c : v) {
+        res.insert(simple_formater(c, is_continued));
+    }
+    return res;
+}

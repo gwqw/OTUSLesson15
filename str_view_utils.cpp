@@ -22,9 +22,8 @@ std::wstring_view get_common_prefix_w(std::wstring_view sv1, std::wstring_view s
     return get_common_prefix_int(sv1, sv2);
 }
 
-
-std::string get_suffix(const std::string& str, std::string_view prefix) {
+std::string_view get_suffix(const std::string& str, std::string_view prefix) {
     auto suffix = string_view(str);
     suffix.remove_prefix(prefix.size());
-    return string(suffix);
+    return suffix;
 }

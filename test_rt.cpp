@@ -2,6 +2,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include <string_view>
+#include <iostream>
 
 #include "str_view_utils.h"
 #include "radix_tree.h"
@@ -27,20 +28,22 @@ BOOST_AUTO_TEST_SUITE(radix_tree_test_suite)
         {
             RadixTree tr;
             tr.insert("aleksey");
-            BOOST_CHECK(getTreeStructure(tr, simple_test_formater) == "aleksey$\n");
+            BOOST_TEST(getTreeStructure(tr, simple_test_formater) == "aleksey$\n");
         }
         {
             RadixTree tr;
             tr.insert("aleksey");
             tr.insert("sasha");
-            BOOST_CHECK(getTreeStructure(tr, simple_test_formater) == "\naleksey$\nsasha$\n");
+            set<string> expected{"", "  aleksey$", "  sasha$"};
+            BOOST_TEST(getTreeStructureForTest(tr) == expected);
         }
         {
             RadixTree tr;
             tr.insert("aleksey");
             tr.insert("sasha");
             tr.insert("aleks");
-            BOOST_CHECK(getTreeStructure(tr, simple_test_formater) == "\nsasha$\naleks$\ney$\n");
+            set<string> expected{"", "  aleks$", "  sasha$", "    ey$"};
+            BOOST_TEST(getTreeStructureForTest(tr) == expected);
         }
         {
             RadixTree tr;
@@ -48,7 +51,8 @@ BOOST_AUTO_TEST_SUITE(radix_tree_test_suite)
             tr.insert("sasha");
             tr.insert("aleks");
             tr.insert("alek");
-            BOOST_CHECK(getTreeStructure(tr, simple_test_formater) == "\nsasha$\nalek$\ns$\ney$\n");
+            set<string> expected{"", "  alek$", "    s$", "      ey$", "  sasha$"};
+            BOOST_TEST(getTreeStructureForTest(tr) == expected);
         }
         {
             RadixTree tr;
@@ -57,7 +61,8 @@ BOOST_AUTO_TEST_SUITE(radix_tree_test_suite)
             tr.insert("aleks");
             tr.insert("alek");
             tr.insert("alesha");
-            BOOST_CHECK(getTreeStructure(tr, simple_test_formater) == "\nsasha$\nale\nk$\ns$\ney$\nsha$\n");
+            set<string> expected{"", "  ale", "    k$", "      s$", "        ey$", "    sha$", "  sasha$"};
+            BOOST_TEST(getTreeStructureForTest(tr) == expected);
         }
         {
             RadixTree tr;
@@ -67,7 +72,8 @@ BOOST_AUTO_TEST_SUITE(radix_tree_test_suite)
             tr.insert("alek");
             tr.insert("alesha");
             tr.insert("maksim");
-            BOOST_CHECK(getTreeStructure(tr, simple_test_formater) == "\nale\nk$\ns$\ney$\nsha$\nsasha$\nmaksim$\n");
+            set<string> expected{"", "  ale", "    k$", "      s$", "        ey$", "    sha$", "  sasha$", "  maksim$"};
+            BOOST_TEST(getTreeStructureForTest(tr) == expected);
         }
     }
 
@@ -76,31 +82,31 @@ BOOST_AUTO_TEST_SUITE(radix_tree_test_suite)
             RadixTree tr;
             tr.insert("root");
             tr.insert("test");
-            BOOST_CHECK(getTreeStructure(tr, simple_test_formater) == "\nroot$\ntest$\n");
+            BOOST_TEST(getTreeStructure(tr, simple_test_formater) == "\nroot$\ntest$\n");
         }
         {
             RadixTree tr;
             tr.insert("root");
             tr.insert("root");
-            BOOST_CHECK(getTreeStructure(tr, simple_test_formater) == "root$\n");
+            BOOST_TEST(getTreeStructure(tr, simple_test_formater) == "root$\n");
         }
         {
             RadixTree tr;
             tr.insert("root");
             tr.insert("roo");
-            BOOST_CHECK(getTreeStructure(tr, simple_test_formater) == "roo$\nt$\n");
+            BOOST_TEST(getTreeStructure(tr, simple_test_formater) == "roo$\nt$\n");
         }
         {
             RadixTree tr;
             tr.insert("root");
             tr.insert("rooter");
-            BOOST_CHECK(getTreeStructure(tr, simple_test_formater) == "root$\ner$\n");
+            BOOST_TEST(getTreeStructure(tr, simple_test_formater) == "root$\ner$\n");
         }
         {
             RadixTree tr;
             tr.insert("root");
             tr.insert("room");
-            BOOST_CHECK(getTreeStructure(tr, simple_test_formater) == "roo\nt$\nm$\n");
+            BOOST_TEST(getTreeStructure(tr, simple_test_formater) == "roo\nt$\nm$\n");
         }
     }
 
@@ -110,35 +116,35 @@ BOOST_AUTO_TEST_SUITE(radix_tree_test_suite)
             tr.insert("r");
             tr.insert("root");
             tr.insert("rest");
-            BOOST_CHECK(getTreeStructure(tr, simple_test_formater) == "r$\noot$\nest$\n");
+            BOOST_TEST(getTreeStructure(tr, simple_test_formater) == "r$\noot$\nest$\n");
         }
         {
             RadixTree tr;
             tr.insert("r");
             tr.insert("root");
             tr.insert("root");
-            BOOST_CHECK(getTreeStructure(tr, simple_test_formater) == "r$\noot$\n");
+            BOOST_TEST(getTreeStructure(tr, simple_test_formater) == "r$\noot$\n");
         }
         {
             RadixTree tr;
             tr.insert("r");
             tr.insert("root");
             tr.insert("roo");
-            BOOST_CHECK(getTreeStructure(tr, simple_test_formater) == "r$\noo$\nt$\n");
+            BOOST_TEST(getTreeStructure(tr, simple_test_formater) == "r$\noo$\nt$\n");
         }
         {
             RadixTree tr;
             tr.insert("r");
             tr.insert("root");
             tr.insert("rooter");
-            BOOST_CHECK(getTreeStructure(tr, simple_test_formater) == "r$\noot$\ner$\n");
+            BOOST_TEST(getTreeStructure(tr, simple_test_formater) == "r$\noot$\ner$\n");
         }
         {
             RadixTree tr;
             tr.insert("r");
             tr.insert("root");
             tr.insert("room");
-            BOOST_CHECK(getTreeStructure(tr, simple_test_formater) == "r$\noo\nt$\nm$\n");
+            BOOST_TEST(getTreeStructure(tr, simple_test_formater) == "r$\noo\nt$\nm$\n");
         }
         {
             RadixTree tr;
@@ -146,7 +152,7 @@ BOOST_AUTO_TEST_SUITE(radix_tree_test_suite)
             tr.insert("root");
             tr.insert("room");
             tr.insert("roo");
-            BOOST_CHECK(getTreeStructure(tr, simple_test_formater) == "r$\noo$\nt$\nm$\n");
+            BOOST_TEST(getTreeStructure(tr, simple_test_formater) == "r$\noo$\nt$\nm$\n");
         }
     }
 
@@ -159,12 +165,12 @@ BOOST_AUTO_TEST_SUITE(radix_tree_test_suite)
             tr.insert("alek");
             tr.insert("alesha");
             tr.insert("maksim");
-            BOOST_CHECK(tr.find("alek") == 3);
-            BOOST_CHECK(tr.find("aleks") == 4);
-            BOOST_CHECK(tr.find("aleksey") == 5);
-            BOOST_CHECK(tr.find("alesha") == 3);
-            BOOST_CHECK(tr.find("maksim") == 0);
-            BOOST_CHECK(tr.find("sasha") == 0);
+            BOOST_TEST(tr.find("alek") == 3);
+            BOOST_TEST(tr.find("aleks") == 4);
+            BOOST_TEST(tr.find("aleksey") == 5);
+            BOOST_TEST(tr.find("alesha") == 3);
+            BOOST_TEST(tr.find("maksim") == 0);
+            BOOST_TEST(tr.find("sasha") == 0);
         }
     }
 

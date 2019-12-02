@@ -29,12 +29,16 @@ public:
     };
 public:
     void insert(std::string_view str);
+    void insert_r(std::string_view str);
     [[nodiscard]] std::size_t find(std::string_view str) const;
     [[nodiscard]] std::vector<TreeValue> getAllValues() const;
 private:
     NodePtr root_;
+
     void update_root(std::string root_label, std::string child_label);
-    static NodeIter get_closest_node(Node* root, std::string_view str);
+    static void insert_recursive(Node* rootNode, char letter, std::string_view str);
+
+    static NodeIter find_node(Node* root, char key);
     template <typename...Args>
     static Node* add_node(Node* node, char key, Args&&... args) {
         auto [it, res] = node->childs.emplace(key, std::make_unique<Node>(std::forward<Args>(args)...));
@@ -45,6 +49,8 @@ private:
         }
     }
     static Node* add_node(Node* node, NodePtr&& new_node);
+    static Node* insert_node(Node* rootNode, char letter, std::string_view new_label,
+            std::string_view old_label, bool is_end);
 };
 
 
