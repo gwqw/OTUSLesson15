@@ -1,17 +1,15 @@
 #include "str_view_utils.h"
 
 #include <string>
+#include <algorithm>
 
 using namespace std;
 
 template<typename CharT>
 std::basic_string_view<CharT> get_common_prefix_int(std::basic_string_view<CharT> sv1,
                                                 std::basic_string_view<CharT> sv2) {
-    size_t cnt = 0;
-    while (cnt < sv1.size() && cnt < sv2.size() && sv1[cnt] == sv2[cnt]) {
-        ++cnt;
-    }
-    return sv1.substr(0, cnt);
+    auto [it1, _] = mismatch(sv1.begin(), sv1.end(), sv2.begin(), sv2.end());
+    return {sv1.begin(), static_cast<size_t>(it1 - sv1.begin())};
 }
 
 std::string_view get_common_prefix(std::string_view sv1, std::string_view sv2) {
