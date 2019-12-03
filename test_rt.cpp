@@ -82,7 +82,8 @@ BOOST_AUTO_TEST_SUITE(radix_tree_test_suite)
             RadixTree tr;
             tr.insert("root");
             tr.insert("test");
-            BOOST_CHECK(getTreeStructure(tr, simple_test_formater) == "\nroot$\ntest$\n");
+            set<string> expected{"", "  root$", "  test$"};
+            BOOST_CHECK(getTreeStructureForTest(tr) == expected);
         }
         {
             RadixTree tr;
