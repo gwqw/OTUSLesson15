@@ -12,11 +12,12 @@ class RadixTree {
     struct Node;
     using NodePtr = std::unique_ptr<Node>;
     using LeafContainer = std::unordered_map<char, NodePtr>;
-    using NodeIter = std::unordered_map<char, NodePtr>::iterator;
+    using NodeIter = LeafContainer::iterator;
     struct Node {
-        std::string label;
+        std::string label_;
         bool is_end_ = true;
-        std::unordered_map<char, NodePtr> childs;
+        LeafContainer childs;
+        Node(std::string label, bool is_end) : label_(std::move(label)), is_end_(is_end) {}
         bool is_node_exist(NodeIter it) const {return it != childs.end();}
         NodeIter find_node(char key) {return childs.find(key);}
         template <typename...Args>
