@@ -15,3 +15,4 @@ std::set<std::string> getTreeStructureForTest(const RadixTree& tr);
 std::string simple_test_formater(const RadixTree::TreeValue& value, const std::vector<bool>& is_cont);
 std::string simple_formater(const RadixTree::TreeValue& value, const std::vector<bool>& is_cont);
 std::string pretty_formater(const RadixTree::TreeValue& value, const std::vector<bool>& is_cont);
+std::string utf8_formater(const RadixTree::TreeValue& value, const std::vector<bool>& is_cont);

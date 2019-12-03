@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
         cout << n << " " << sv.substr(0, pos+1) << '\n';
     }
 
-    cout << getTreeStructure(tr, pretty_formater);
+    cout << getTreeStructure(tr, utf8_formater);
 
     return 0;
 }
