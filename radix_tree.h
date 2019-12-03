@@ -15,16 +15,28 @@ class RadixTree {
     using NodeIter = std::unordered_map<char, NodePtr>::iterator;
     struct Node {
         std::string label;
-        bool is_end = true;
+        bool is_end_ = true;
         std::unordered_map<char, NodePtr> childs;
-        [[nodiscard]] bool isLeaf() const {return childs.empty();}
+        bool is_node_exist(NodeIter it) const {return it != childs.end();}
+        NodeIter find_node(char key) {return childs.find(key);}
+        template <typename...Args>
+        Node* add_node(char key, Args&&... args) {
+            auto [it, res] = childs.emplace(key, std::make_unique<Node>(std::forward<Args>(args)...));
+            if (res) {
+                return it->second.get();
+            } else {
+                return nullptr;
+            }
+        }
+        Node* add_node(NodePtr &&new_node);
+        Node* insert_node(char letter, std::string_view new_label,
+                          std::string_view old_label, bool is_end);
     };
 public:
     struct TreeValue {
         std::string_view label;
         std::size_t lvl = 0;
         bool is_end = false;
-        bool is_leaf = false;
         bool is_last = false;
     };
 public:
@@ -33,18 +45,9 @@ public:
     [[nodiscard]] std::vector<TreeValue> getAllValues() const;
 private:
     NodePtr root_;
+
     void update_root(std::string root_label, std::string child_label);
-    static NodeIter get_closest_node(Node* root, std::string_view str);
-    template <typename...Args>
-    static Node* add_node(Node* node, char key, Args&&... args) {
-        auto [it, res] = node->childs.emplace(key, std::make_unique<Node>(std::forward<Args>(args)...));
-        if (res) {
-            return it->second.get();
-        } else {
-            return nullptr;
-        }
-    }
-    static Node* add_node(Node* node, NodePtr&& new_node);
+    static void insert_recursive(Node* rootNode, char letter, std::string_view str);
 };
 
 

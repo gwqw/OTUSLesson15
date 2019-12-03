@@ -2,6 +2,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include <string_view>
+#include <iostream>
 
 #include "str_view_utils.h"
 #include "radix_tree.h"
@@ -33,14 +34,16 @@ BOOST_AUTO_TEST_SUITE(radix_tree_test_suite)
             RadixTree tr;
             tr.insert("aleksey");
             tr.insert("sasha");
-            BOOST_CHECK(getTreeStructure(tr, simple_test_formater) == "\naleksey$\nsasha$\n");
+            set<string> expected{"", "  aleksey$", "  sasha$"};
+            BOOST_CHECK(getTreeStructureForTest(tr) == expected);
         }
         {
             RadixTree tr;
             tr.insert("aleksey");
             tr.insert("sasha");
             tr.insert("aleks");
-            BOOST_CHECK(getTreeStructure(tr, simple_test_formater) == "\nsasha$\naleks$\ney$\n");
+            set<string> expected{"", "  aleks$", "  sasha$", "    ey$"};
+            BOOST_CHECK(getTreeStructureForTest(tr) == expected);
         }
         {
             RadixTree tr;
@@ -48,7 +51,8 @@ BOOST_AUTO_TEST_SUITE(radix_tree_test_suite)
             tr.insert("sasha");
             tr.insert("aleks");
             tr.insert("alek");
-            BOOST_CHECK(getTreeStructure(tr, simple_test_formater) == "\nsasha$\nalek$\ns$\ney$\n");
+            set<string> expected{"", "  alek$", "    s$", "      ey$", "  sasha$"};
+            BOOST_CHECK(getTreeStructureForTest(tr) == expected);
         }
         {
             RadixTree tr;
@@ -57,7 +61,8 @@ BOOST_AUTO_TEST_SUITE(radix_tree_test_suite)
             tr.insert("aleks");
             tr.insert("alek");
             tr.insert("alesha");
-            BOOST_CHECK(getTreeStructure(tr, simple_test_formater) == "\nsasha$\nale\nk$\ns$\ney$\nsha$\n");
+            set<string> expected{"", "  ale", "    k$", "      s$", "        ey$", "    sha$", "  sasha$"};
+            BOOST_CHECK(getTreeStructureForTest(tr) == expected);
         }
         {
             RadixTree tr;
@@ -67,7 +72,8 @@ BOOST_AUTO_TEST_SUITE(radix_tree_test_suite)
             tr.insert("alek");
             tr.insert("alesha");
             tr.insert("maksim");
-            BOOST_CHECK(getTreeStructure(tr, simple_test_formater) == "\nale\nk$\ns$\ney$\nsha$\nsasha$\nmaksim$\n");
+            set<string> expected{"", "  ale", "    k$", "      s$", "        ey$", "    sha$", "  sasha$", "  maksim$"};
+            BOOST_CHECK(getTreeStructureForTest(tr) == expected);
         }
     }
 
