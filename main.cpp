@@ -9,8 +9,12 @@
 
 using namespace std;
 
-bool is_utf8_old_byte(unsigned char c) {
-    return (c >>= 6) == 11; // 11
+bool is_2octet_utf8_high_byte(unsigned char c) {
+    return (c >>= 6) == 0b11;
+}
+
+bool is_2octet_utf8_low_byte(unsigned char c) {
+    return (c >>= 6) == 0b10;
 }
 
 int main(int argc, char* argv[]) {
@@ -26,7 +30,9 @@ int main(int argc, char* argv[]) {
         string_view sv = n;
         auto pos = tr.find(n);
         // utf-8 fix
-        if (is_utf8_old_byte(sv[pos])) {
+        if (is_2octet_utf8_high_byte(sv[pos])
+            && pos+1 < sv.size() && is_2octet_utf8_low_byte(sv[pos+1])
+        ) {
             ++pos;
         }
         cout << n << " " << sv.substr(0, pos+1) << '\n';
