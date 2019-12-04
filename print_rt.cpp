@@ -63,7 +63,7 @@ std::string getTreeStructure(const RadixTree& tr, Formater fm) {
     for (const auto& c : v) {
         if (is_first) {
             is_first = false;
-            res += string(c.label) + '\n';
+            res += simple_test_formater(c, is_continued) + '\n';
         } else {
             if (c.lvl >= is_continued.size()) {
                 is_continued.resize(c.lvl + 1);
