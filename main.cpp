@@ -10,7 +10,7 @@
 using namespace std;
 
 bool is_2octet_utf8_high_byte(unsigned char c) {
-    return (c >>= 6) == 0b11;
+    return c == 0xd0 || c == 0xd1;
 }
 
 bool is_2octet_utf8_low_byte(unsigned char c) {

@@ -67,15 +67,18 @@ void RadixTree::insert_recursive(Node* rootNode, char letter, std::string_view s
 }
 
 std::size_t RadixTree::find(std::string_view str) const {
-    if (!root_) return 0;
+    if (!root_ || str.empty()) return 0;
+    string_view prefix = get_common_prefix(str, root_->label_);
+    str.remove_prefix(prefix.size());
+    if (str.empty()) return prefix.size() - 1;
 
-    size_t cur_pos = 0;
+    size_t cur_pos = prefix.size();
     Node* rootNode = root_.get();
     while (!str.empty()) {
         auto it = rootNode->find_node(str[0]);
         if (!rootNode->is_node_exist(it)) break;
         const auto& node = it->second;
-        string_view prefix = get_common_prefix(str, node->label_);
+        prefix = get_common_prefix(str, node->label_);
 
         if (!prefix.empty() && prefix == node->label_) {
             str.remove_prefix(prefix.size());

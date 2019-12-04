@@ -157,7 +157,7 @@ BOOST_AUTO_TEST_SUITE(radix_tree_test_suite)
     }
 
     BOOST_AUTO_TEST_CASE(test_find) {
-        {
+        { // zero root
             RadixTree tr;
             tr.insert("aleksey");
             tr.insert("sasha");
@@ -171,6 +171,33 @@ BOOST_AUTO_TEST_SUITE(radix_tree_test_suite)
             BOOST_CHECK(tr.find("alesha") == 3);
             BOOST_CHECK(tr.find("maksim") == 0);
             BOOST_CHECK(tr.find("sasha") == 0);
+        }
+        { // non-zero root
+            RadixTree tr;
+            tr.insert("alesha");
+            tr.insert("ale");
+            BOOST_CHECK(tr.find("alesha") == 3);
+            BOOST_CHECK(tr.find("ale") == 2);
+        }
+        {
+            RadixTree tr;
+            tr.insert("alesha");
+            tr.insert("ale");
+            tr.insert("aleshak");
+            BOOST_CHECK(tr.find("alesha") == 3);
+            BOOST_CHECK(tr.find("ale") == 2);
+            BOOST_CHECK(tr.find("aleshak") == 6);
+        }
+        {
+            RadixTree tr;
+            tr.insert("aleksey");
+            tr.insert("aleks");
+            tr.insert("alesha");
+            tr.insert("alekey");
+            BOOST_CHECK(tr.find("aleksey") == 5);
+            BOOST_CHECK(tr.find("aleks") == 4);
+            BOOST_CHECK(tr.find("alesha") == 3);
+            BOOST_CHECK(tr.find("alekey") == 4);
         }
     }
 
