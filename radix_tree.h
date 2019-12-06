@@ -21,17 +21,10 @@ class RadixTree {
         bool is_node_exist(NodeIter it) const {return it != childs.end();}
         NodeIter find_node(char key) {return childs.find(key);}
         template <typename...Args>
-        Node* add_node(char key, Args&&... args) {
-            auto [it, res] = childs.emplace(key, std::make_unique<Node>(std::forward<Args>(args)...));
-            if (res) {
-                return it->second.get();
-            } else {
-                return nullptr;
-            }
+        void add_node(char key, Args&&... args) {
+            childs.emplace(key, std::make_unique<Node>(std::forward<Args>(args)...));
         }
-        Node* add_node(NodePtr &&new_node);
-        Node* insert_node(char letter, std::string_view new_label,
-                          std::string_view old_label, bool is_end);
+        void add_node(NodePtr &&new_node);
     };
 public:
     struct TreeValue {
@@ -46,9 +39,8 @@ public:
     [[nodiscard]] std::vector<TreeValue> getAllValues() const;
 private:
     NodePtr root_;
-
-    void update_root(std::string root_label, std::string child_label);
-    static void insert_recursive(Node* rootNode, char letter, std::string_view str);
+    // methods
+    static void insert_recursive(NodePtr& rootNode, std::string_view str);
 };
 
 
