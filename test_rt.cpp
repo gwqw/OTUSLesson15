@@ -157,6 +157,25 @@ BOOST_AUTO_TEST_SUITE(radix_tree_test_suite)
     }
 
     BOOST_AUTO_TEST_CASE(test_find) {
+        {
+            RadixTree tr;
+            tr.insert("root");
+            BOOST_CHECK(tr.find("root") == 3);
+        }
+        {
+            RadixTree tr;
+            tr.insert("root");
+            tr.insert("r");
+            BOOST_CHECK(tr.find("root") == 1);
+            BOOST_CHECK(tr.find("r") == 0);
+        }
+        {
+            RadixTree tr;
+            tr.insert("root");
+            tr.insert("toor");
+            BOOST_CHECK(tr.find("root") == 0);
+            BOOST_CHECK(tr.find("toor") == 0);
+        }
         { // zero root
             RadixTree tr;
             tr.insert("aleksey");

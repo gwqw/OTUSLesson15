@@ -40,29 +40,20 @@ void RadixTree::insert_recursive(NodePtr& rootNode, std::string_view str) {
 }
 
 std::size_t RadixTree::find(std::string_view str) const {
-    if (!root_ || str.empty()) return 0;
-    string_view prefix = get_common_prefix(str, root_->label_);
-    str.remove_prefix(prefix.size());
-    if (str.empty()) return prefix.size() - 1;
+    // special case for str in root
+    if (root_ && !str.empty() && str == root_->label_) return str.size()-1;
+    return find_recursive(root_, str);
+}
 
-    size_t cur_pos = prefix.size();
-    Node* rootNode = root_.get();
-    while (!str.empty()) {
-        auto it = rootNode->find_node(str[0]);
-        if (!rootNode->is_node_exist(it)) break;
-        const auto& node = it->second;
-        prefix = get_common_prefix(str, node->label_);
-
-        if (!prefix.empty() && prefix == node->label_) {
-            str.remove_prefix(prefix.size());
-            if (str.empty() ) {
-                return cur_pos;
-            }
-            rootNode = node.get();
-            cur_pos += prefix.size();
-        }
+std::size_t RadixTree::find_recursive(const RadixTree::NodePtr &rootNode, std::string_view str) {
+    if (!rootNode || str.empty()) { // mustn't go here if str is in tree
+        return 0;
     }
-    return 0;
+    string_view prefix = get_common_prefix(str, rootNode->label_);
+    str.remove_prefix(prefix.size());
+    if (str.empty()) return 0;
+
+    return prefix.size() + find_recursive(rootNode->childs[str[0]], str);
 }
 
 void RadixTree::Node::add_node(RadixTree::NodePtr &&new_node) {

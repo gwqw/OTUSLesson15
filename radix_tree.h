@@ -18,8 +18,6 @@ class RadixTree {
         bool is_end_ = true;
         LeafContainer childs;
         Node(std::string label, bool is_end) : label_(std::move(label)), is_end_(is_end) {}
-        bool is_node_exist(NodeIter it) const {return it != childs.end();}
-        NodeIter find_node(char key) {return childs.find(key);}
         template <typename...Args>
         void add_node(char key, Args&&... args) {
             childs.emplace(key, std::make_unique<Node>(std::forward<Args>(args)...));
@@ -41,6 +39,7 @@ private:
     NodePtr root_;
     // methods
     static void insert_recursive(NodePtr& rootNode, std::string_view str);
+    static std::size_t find_recursive(const NodePtr& rootNode, std::string_view str);
 };
 
 
